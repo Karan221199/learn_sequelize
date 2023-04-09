@@ -25,6 +25,14 @@ app.delete('/users/:id',userCtrl.deleteUser)
 
 app.put('/users/:id',userCtrl.updateUser)
 
+app.get('/query',userCtrl.queryUser)
+
+app.get('/finders', userCtrl.findersUser)
+
+app.get('/get-set-virtual', userCtrl.getSetVirtualUser)
+
+app.get('/validate', userCtrl.validateUser)
+
 // User.sync({ force: true });
 // Contact.sync({ force: true });
 

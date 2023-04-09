@@ -1,4 +1,6 @@
 var db = require('../models')
+const { Sequelize ,Op} = require('sequelize');
+const { json } = require('body-parser');
 var User = db.user;
 
 var addUser = async(req,res) => {
@@ -66,11 +68,78 @@ var updateUser = async(req,res) => {
     res.status(200).json(data)
 }
 
+var queryUser = async(req,res) => {
+
+    const user = await User.count({
+        where: {
+          id: {
+            [Op.gt]: 4
+          }
+        }
+      });
+    res.status(200).json({data:user})
+}
+
+var findersUser = async(req,res) => {
+
+    const { count, rows } = await User.findAndCountAll({
+        where: { lastName: 'middha' },
+    });
+      
+    res.status(200).json({data:rows,count:count})
+}
+
+var getSetVirtualUser = async(req,res) => {
+
+    // const data = await User.findAll({
+    //     where: { lastName: 'middha' },
+    // });
+      
+    const data = await User.create({
+        firstName:'Nani',
+        lastName:'swdwdwd'
+    })
+    res.status(200).json({data:data})
+}
+
+var validateUser = async(req,res) => {
+    let messages = []
+    var data = {}
+    try{
+        data = await User.create({
+            firstName:'sjsjsjsj',
+            lastName:'swdwdwd'
+        })
+    }
+    catch(e) {
+        let message;
+        e.errors.forEach(error=>{
+            switch(error.validatorKey) {
+                case 'isAlpha':
+                    message = "Only alphabets are allowed";
+                    break;
+                case 'isLowercase':
+                    message = "Only lowercase is allowed";
+                    break;
+            }
+            messages[error.path] = message;
+        })
+        
+    }
+    console.log(JSON.parse(messages))
+    res.json(JSON.parse(messages))
+    // res.status(200).json({data:data,messages:messages})
+}
+
 module.exports = {
     addUser,
     getUsers,
     getUser,
     postUser,
     deleteUser,
-    updateUser
+    updateUser,
+    queryUser,
+    findersUser,
+    getSetVirtualUser,
+    validateUser
 }
