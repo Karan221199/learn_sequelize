@@ -16,6 +16,61 @@ var addUser = async(req,res) => {
     res.status(200).json(jane.toJSON())
 }
 
+var getUsers = async(req,res) => {
+    const data = await User.findAll({});
+
+    res.status(200).json(data)
+}
+
+var getUser = async(req,res) => {
+    const data = await User.findOne({
+        where:{
+            id: req.params.id
+        }
+    });
+
+    res.status(200).json(data)
+}
+
+var postUser = async(req,res) => {
+    var postData = req.body;
+    if(postData.length>1){
+        const data  = await User.bulkCreate(postData);
+        res.status(200).json({data:data})
+    }
+    else {
+        const data  = await User.create(postData);
+        res.status(200).json({data:data})
+    }
+    
+}
+
+var deleteUser = async(req,res) => {
+    const data = await User.destroy({
+        where:{
+            id: req.params.id
+        }
+    });
+
+    res.status(200).json(data)
+}
+
+var updateUser = async(req,res) => {
+    var updatedData = req.body;
+    const data = await User.update(updatedData,{
+        where:{
+            id: req.params.id
+        }
+    });
+
+    res.status(200).json(data)
+}
+
 module.exports = {
-    addUser
+    addUser,
+    getUsers,
+    getUser,
+    postUser,
+    deleteUser,
+    updateUser
 }

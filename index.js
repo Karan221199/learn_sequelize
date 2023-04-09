@@ -17,6 +17,14 @@ app.get('/users',userCtrl.getUsers)
 
 app.get('/add',userCtrl.addUser)
 
+app.get('/users/:id',userCtrl.getUser)
+
+app.post('/users',userCtrl.postUser)
+
+app.delete('/users/:id',userCtrl.deleteUser)
+
+app.put('/users/:id',userCtrl.updateUser)
+
 // User.sync({ force: true });
 // Contact.sync({ force: true });
 
