@@ -12,7 +12,7 @@ try {
 } catch (error) {
     console.error('Unable to connect to the database:', error);
 }
-
+//hello
 const db = {}
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
