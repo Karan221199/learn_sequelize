@@ -33,6 +33,20 @@ app.get('/get-set-virtual', userCtrl.getSetVirtualUser)
 
 app.get('/validate', userCtrl.validateUser)
 
+app.get('/one-to-one', userCtrl.oneToOneUser)
+
+app.get('/one-to-many', userCtrl.oneToManyUser)
+
+app.get('/many-to-many', userCtrl.manyToManyUser)
+
+app.get('/paranoid', userCtrl.paranoidUser)
+
+app.get('/loading', userCtrl.LoadingUser)
+
+app.get('/eager', userCtrl.eagerLoadingUser)
+
+app.get('/creator', userCtrl.creatorUser)
+
 // User.sync({ force: true });
 // Contact.sync({ force: true });
 

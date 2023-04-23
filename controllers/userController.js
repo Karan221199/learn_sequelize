@@ -1,7 +1,9 @@
 var db = require('../models')
 const { Sequelize ,Op} = require('sequelize');
+var Contact = db.contact
 const { json } = require('body-parser');
 var User = db.user;
+var Education = db.education
 
 var addUser = async(req,res) => {
     const jane = await User.create({ firstName: "karan",lastName:"middha" });
@@ -131,6 +133,207 @@ var validateUser = async(req,res) => {
     // res.status(200).json({data:data,messages:messages})
 }
 
+var oneToOneUser = async(req,res)=>{
+    // var data = await User.create({firstName:"rahulgggbb",lastName:"dua"})
+    // if(data && data.id) {
+    //     await Contact.create({permanent_address:"wwdfwd",current_address:"wdwd",user_id:data.id})
+    // }
+
+    // var data = await User.findAll({
+    //     attributes:['firstName','lastName'],
+    //     include:[{
+    //         model:Contact,
+    //         as:'contactDetails',
+    //         attributes:['permanent_address','current_address']
+    //     }],
+    //     where:{id:3}
+    // });
+
+    var data = await Contact.findAll({
+        attributes:['permanent_address','current_address'],
+        include:[{
+            model:User,
+            as:'userDetails',
+            attributes:['firstName','lastName']
+        }],
+        where:{id:1}
+    });
+    res.status(200).json({data:data})
+}
+
+var oneToManyUser = async(req,res)=>{
+    // var data = await Contact.create({permanent_address:"polo",current_address:"oooo",user_id:1})
+
+    // var data = await User.findAll({
+    //     attributes:['firstName','lastName'],
+    //     include:[{
+    //         model:Contact,
+    //         as:'contactDetails',
+    //         attributes:['permanent_address','current_address']
+    //     }],
+    //     where:{id:1}
+    // });
+
+    var data = await Contact.findAll({
+        attributes:['permanent_address','current_address'],
+        include:[{
+            model:User,
+            as:'userDetails',
+            attributes:['firstName','lastName']
+        }],
+        // where:{id:1}
+    });
+    res.status(200).json({data:data})
+}
+
+var manyToManyUser = async(req,res)=>{
+    // var data = await User.create({firstName:"karan",lastName:"middhaaa"})
+    // if(data && data.id) {
+    //     await Contact.create({permanent_address:"delhi",current_address:"meerut"})
+    // }
+
+    // var data = await Contact.findAll({
+    //     attributes:['permanent_address','current_address'],
+    //     include:[{
+    //         model:User,
+    //         attributes:['firstName','lastName']
+    //     }],   
+    // });
+    // res.status(200).json({data:data})
+
+    var data = await User.findAll({
+        attributes:['firstName','lastName'],
+        include:[{
+            model:Contact,
+            attributes:['permanent_address','current_address']
+        }],
+    });
+    res.status(200).json({data:data})
+}
+
+var paranoidUser = async(req,res)=>{
+    // var data = await User.create({firstName:"karannn",lastName:"middhaaa"})
+
+    // var data = await User.destroy({
+    //     where: {
+    //         id: 2
+    //       },
+    // })
+
+    // var data = await User.restore({
+    //     where: {
+    //         id: 2
+    //       },
+    // })
+
+    var data = await User.findAll({
+        paranoid:false
+    });
+
+    res.status(200).json({data:data})
+}
+
+var LoadingUser = async(req,res)=>{
+    // var data = await User.create({firstName:"karan",lastName:"middhaaa"})
+    // if(data && data.id) {
+    //     await Contact.create({permanent_address:"delhi",current_address:"meerut",'UserId':data.id})
+    // }
+
+    var data = await User.findOne({
+        where:{
+            id:2
+        },
+        include : Contact
+    })
+
+    // var contactData = await data.getContacts();
+    res.status(200).json({data:data})
+}
+
+var eagerLoadingUser = async(req,res)=>{
+    var data = await User.findAll({
+        // include:[{
+        //     model:Contact,
+        //     required:false,
+        //     right:true
+        // },{
+        //     model:Education,
+        // }]
+        // include:{
+        //     model: Contact,
+        //     include: {
+        //         model: Education
+        //     }
+        // }
+        // include:{all:true,nested:true}
+        include:{
+            model: Contact,
+            include: {
+                model: Education
+            },
+            where:{
+                id:2
+            }
+        }
+
+    })
+    res.status(200).json({data:data})
+}
+
+var creatorUser = async(req,res)=>{
+    // var data = await User.create({firstName:"karan",lastName:"middhaaa"})
+    // if(data && data.id) {
+    //     await Contact.create({permanent_address:"delhi",current_address:"meerut",'UserId':data.id})
+    // }
+    // var data = await User.findAll({ 
+    //     include:{
+    //         model: Contact,
+    //         include: {
+    //             model: Education
+    //         },
+    //         where:{
+    //             id:2
+    //         }
+    //     }
+
+    // })
+
+    await Contact.bulkCreate([{
+        permanent_address:'ram efef colony',
+        current_address:'fefefef',
+        users:{
+            firstName:"fefef",
+            lastName:"efef"
+        }
+    },
+    {
+        permanent_address:'ram',
+        current_address:'mohalwwi',
+        users:{
+            firstName:"kawwran",
+            lastName:"wwww"
+        }
+    },
+    {
+        permanent_address:'ram nagaewdewdr colony',
+        current_address:'moewdwedhali',
+        users:{
+            firstName:"edwewd",
+            lastName:"edwed"
+        }
+    }],{
+        include: [db.contactUser]
+    })
+
+     var data = await User.findAll({ 
+        include:{
+            model: Contact,
+        }
+
+    })
+    res.status(200).json({data:data})
+}
+
 module.exports = {
     addUser,
     getUsers,
@@ -141,5 +344,12 @@ module.exports = {
     queryUser,
     findersUser,
     getSetVirtualUser,
-    validateUser
+    validateUser,
+    oneToOneUser,
+    oneToManyUser,
+    manyToManyUser,
+    paranoidUser,
+    LoadingUser,
+    eagerLoadingUser,
+    creatorUser
 }

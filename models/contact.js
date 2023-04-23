@@ -10,7 +10,8 @@ Contact.init({
   current_address: {
     type: DataTypes.STRING
     // allowNull defaults to true
-  }
+  },
+  UserId: DataTypes.INTEGER
 }, {
   // Other model options go here
   sequelize, // We need to pass the connection instance

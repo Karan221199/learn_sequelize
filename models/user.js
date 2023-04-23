@@ -25,7 +25,9 @@ const User = sequelize.define('User', {
   }
 }, {
   // Other model options go here
-  tableName:"users"
+  tableName:"users",
+  paranoid:true,
+  deletedAt:'soft_delete'
 });
 
 return User
