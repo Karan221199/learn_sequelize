@@ -334,6 +334,220 @@ var creatorUser = async(req,res)=>{
     res.status(200).json({data:data})
 }
 
+var mNAssocationsUser = async(req,res)=>{
+    // const amidala = await db.customer.create({ username: 'p4dm3', points: 1000 });
+    // const queen = await db.profile.create({ name: 'Queen' });
+    // await amidala.addProfile(queen, { through: { selfGranted: false } });
+    // const result = await db.customer.findOne({
+    //     where: { username: 'p4dm3' },
+    //     include: db.profile
+    // });
+
+    // const amidala = await db.customer.create({
+    //     username: 'p4dm3',
+    //     points: 1000,
+    //     profiles: [{
+    //       name: 'Queen',
+    //       grants: {
+    //         selfGranted: true
+    //       }
+    //     }]
+    //   }, {
+    //     include: db.profile
+    // });
+      
+    // const result = await db.customer.findOne({
+    //     where: { username: 'p4dm3' },
+    //     include: db.profile
+    // });
+
+    // var result = await db.customer.findAll({
+    //     include: {
+    //       model: db.grant,
+    //       include: db.profile
+    //     }
+    // });
+
+    var result  = await db.customer.findOne({
+        include: {
+            model: db.profile,
+            through: {
+              attributes: ['selfGranted']
+            }
+        }
+    });
+
+    res.status(200).json({data:result})
+}
+
+var m2m2mUser = async(req,res)=>{
+    // await db.player.bulkCreate([
+    //     { username: 's0me0ne' },
+    //     { username: 'empty' },
+    //     { username: 'greenhead' },
+    //     { username: 'not_spock' },
+    //     { username: 'bowl_of_petunias' }
+    // ]);
+    // await db.game.bulkCreate([
+    //     { name: 'The Big Clash' },
+    //     { name: 'Winter Showdown' },
+    //     { name: 'Summer Beatdown' }
+    // ]);
+    // await db.team.bulkCreate([
+    //     { name: 'The Martians' },
+    //     { name: 'The Earthlings' },
+    //     { name: 'The Plutonians' }
+    // ]);
+
+  
+
+    // await db.gameTeam.bulkCreate([
+    //     { GameId: 1, TeamId: 1 },   // this GameTeam will get id 1
+    //     { GameId: 1, TeamId: 2 },   // this GameTeam will get id 2
+    //     { GameId: 2, TeamId: 1 },   // this GameTeam will get id 3
+    //     { GameId: 2, TeamId: 3 },   // this GameTeam will get id 4
+    //     { GameId: 3, TeamId: 2 },   // this GameTeam will get id 5
+    //     { GameId: 3, TeamId: 3 }    // this GameTeam will get id 6
+    //   ]);
+
+    //   await db.playerGameTeam.bulkCreate([
+    //     // In 'Winter Showdown' (i.e. GameTeamIds 3 and 4):
+    //     { PlayerId: 1, GameTeamId: 3 },   // s0me0ne played for The Martians
+    //     { PlayerId: 3, GameTeamId: 3 },   // greenhead played for The Martians
+    //     { PlayerId: 4, GameTeamId: 4 },   // not_spock played for The Plutonians
+    //     { PlayerId: 5, GameTeamId: 4 }    // bowl_of_petunias played for The Plutonians
+    //   ]);
+
+    const game = await db.game.findOne({
+        where: {
+          name: "Winter Showdown"
+        },
+        include: {
+          model: db.gameTeam,
+          include: [
+            {
+              model: db.player,
+              through: { attributes: [] } // Hide unwanted `PlayerGameTeam` nested object from results
+            },
+            db.team
+          ]
+        }
+    });
+
+    console.log(`Found game: "${game.name}"`);
+  for (let i = 0; i < game.GameTeams.length; i++) {
+    const team = game.GameTeams[i].Team;
+    const players = game.GameTeams[i].Players;
+    console.log(`- Team "${team.name}" played game "${game.name}" with the following players:`);
+    console.log(players.map(p => `--- ${p.username}`).join('\n'));
+  }
+    res.status(200).json({data:game})
+}
+
+var scopeUser = async(req,res)=>{
+
+    // db.user.addScope('checkStatus',{
+    //     where: {
+    //         status:0
+    //     }
+    // })
+
+    db.user.addScope('checkLastName',{
+        where: {
+            lastName:'efef ,Indian'
+        }
+    })
+
+    db.user.addScope('includeContact',{
+        include:{
+            model:Contact,
+            attributes:['current_address']
+        }
+    })
+
+    db.user.addScope('userAttributes',{
+        attributes:['lastName']
+    })
+
+    var data= await db.user.scope(['includeContact','checkLastName','userAttributes']).findAll({
+    });
+    res.status(200).json({data:data})
+}
+
+var transactionUser = async(req,res)=>{
+    // const t = await db.sequelize.transaction();
+    // try {
+    //     var data = await User.create({firstName:"manoj",lastName:"middhaaa"}, { transaction: t })
+    //     if(data && data.id) {
+    //         await Contact.create({permanent_address:"delhi",current_address:"meerut",'UserId':null}, { transaction: t })
+    //     }
+    //     await t.commit();
+    // }
+    // catch(e){
+    //     await t.rollback(); 
+    //     console.log(e)
+    // }
+
+    try {
+
+        const data = await db.sequelize.transaction(async (t) => {
+      
+        //   const user = await User.create({
+        //     firstName: 'abrahwdwam',
+        //     lastName: 'Lincoln'
+        //   }, { transaction: t });
+      
+        //   if(user && user.id) {
+        //     await Contact.bulkCreate([{permanent_address:"deldfdfhi",current_address:"meeredeut",'UserId':user.id},{permanent_address:"deded",current_address:"cdcefef",'UserId':null}], { transaction: t })
+        //     }
+      
+        //   return user;
+        const data = await Contact.bulkCreate([{
+            permanent_address:'ram efef colony',
+            current_address:'fefefef',
+            users:{
+                firstName:"fdsdwwqdefef",
+                lastName:"efef"
+            }
+        },
+        {
+            permanent_address:'ram',
+            current_address:'mohalwwi',
+            users:{
+                firstName:"kawwdqwqdwdwdwran",
+                lastName:"wwww"
+            }
+        },
+        {
+            permanent_address:'ram nagaewdewdr colony',
+            current_address:'moewdwedhali',
+            users:{
+                firstName:"Adwewd",
+                lastName:"edwed"
+            }
+        }],{
+            include: [db.contactUser]
+        })
+
+        return data
+        });
+        res.status(200).json({data:data})
+        // If the execution reaches this line, the transaction has been committed successfully
+        // `result` is whatever w   as returned from the transaction callback (the `user`, in this case)
+      
+      } catch (error) {
+      console.log(error)
+        // If the execution reaches this line, an error occurred.
+        // The transaction has already been rolled back automatically by Sequelize!
+      
+      }
+}
+
+var hooksUser = async(req,res)=>{
+    var data = await User.create({firstName:"mssssasdsnoj",lastName:"middwdwdwhaaa",status:0});
+    res.status(200).json({data:data})
+}
+
 module.exports = {
     addUser,
     getUsers,
@@ -351,5 +565,10 @@ module.exports = {
     paranoidUser,
     LoadingUser,
     eagerLoadingUser,
-    creatorUser
+    creatorUser,
+    mNAssocationsUser,
+    m2m2mUser,
+    scopeUser,
+    transactionUser,
+    hooksUser
 }

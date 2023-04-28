@@ -47,6 +47,15 @@ app.get('/eager', userCtrl.eagerLoadingUser)
 
 app.get('/creator', userCtrl.creatorUser)
 
+app.get('/m-n-associations', userCtrl.mNAssocationsUser)
+
+app.get('/m2m2m', userCtrl.m2m2mUser)
+
+app.get('/scopes',userCtrl.scopeUser)
+
+app.get('/transaction',userCtrl.transactionUser)
+
+app.get('/hooks',userCtrl.hooksUser)
 // User.sync({ force: true });
 // Contact.sync({ force: true });
 

@@ -11,8 +11,12 @@ Contact.init({
     type: DataTypes.STRING
     // allowNull defaults to true
   },
-  UserId: DataTypes.INTEGER
+  UserId: {
+    type:DataTypes.INTEGER,
+    allowNull: false
+  }
 }, {
+  
   // Other model options go here
   sequelize, // We need to pass the connection instance
   modelName: 'Contact' // We need to choose the model name
